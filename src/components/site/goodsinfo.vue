@@ -21,7 +21,45 @@
 
         <!--商品图片-->
         <div class="pic-box">
-
+            <!--
+                1.0 去查找对应的JQ插件
+                2.0 下载JQ插件文件，到项目的今天资源里的JQ插件库文件夹中。
+                3.0 看结构和JS代码，把相关的结构写进模板里。
+                4.0 引进JS代码和CSS代码。
+                    @import url('../../../statics/site/js/jqplugins/imgzoom/css/magnifier.css');
+                    导入jquery插件文件:
+                    import '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
+                    CSS代码在组件的style引入。JQ在组件的script引入，写在export外面。
+                5.0 适当做出修改,并且初始化。
+            -->
+            <div class="magnifier" id="magnifier1">
+                <div class="magnifier-container">
+                    <div class="images-cover">
+                    </div>
+                    <!--当前图片显示容器-->
+                    <div class="move-view"></div>
+                    <!--跟随鼠标移动的盒子-->
+                    </div>
+                    <div class="magnifier-assembly">
+                    <div class="magnifier-btn">
+                            <span class="magnifier-btn-left">&lt;</span>
+                            <span class="magnifier-btn-right">&gt;</span>
+                        </div>
+                        <!--按钮组-->
+                        <div class="magnifier-line">
+                            <ul class="clearfix animation03">
+                                <li v-for='(item,index) in ginfo.imglist' :key="item.id">
+                                    <div class="small-img">
+                                        <img :src="item.original_path" />
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <!--缩略图-->
+                    </div>
+                <div class="magnifier-view"></div>
+                <!--经过放大的图片显示容器-->
+            </div>
         </div>
         <!--/商品图片-->
 
@@ -183,6 +221,13 @@
 
 <script>
 
+import  '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
+
+//因为是异步获取，所以不能在这里设置初始化
+//(function() {
+    //$('#magnifier1').imgzoon({magnifier:'#magnifier1'});
+//});
+
   export default{
     data(){
         return{
@@ -199,7 +244,10 @@
             this.$http.get('/site/goods/getgoodsinfo/'+goodsid).then(res=>{
                 console.log(res);
                 this.ginfo = res.data.message;
-
+                // 等图片数据加载回来以后再去执行插件的初始化操作
+                    setTimeout(()=>{
+                     $('#magnifier1').imgzoon({magnifier:'#magnifier1'});
+                 },100);
             });
         }
     }
@@ -207,6 +255,6 @@
 
 </script>
 
-<style scoped>
-
+<style>
+    @import url('../../../statics/site/js/jqplugins/imgzoom/css/magnifier.css');
 </style>
