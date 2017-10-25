@@ -21,13 +21,17 @@ import layout from './components/site/layout.vue';
 
 import goodslist from './components/site/goodslist.vue';
 
+import goodsinfo from './components/site/goodsinfo.vue';
+
 //子路由和父路由关系是表明：在URL上面的关系
 var router = new vueRouter({
     routes:[
         {name:'default',path:'/',redirect:'/site'},
         {name:'layout',path:'/site',component:layout,
     children:[
-        {name:'goodslist',path:'goodslist',component:goodslist}
+        {name:'goodslist',path:'goodslist',component:goodslist},
+        {name:'goodsinfo',path:'goodsinfo/:goodsid',component:goodsinfo}
+
     ]
 }
     ]

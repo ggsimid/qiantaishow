@@ -62,7 +62,10 @@
                                     <img :src="item.img_url">
                                 </div>
                                 <div class="txt-box">
-                                    <a href="/goods/show-98.html">{{item.title}}</a>
+                                     <router-link v-bind="{to:'/site/goodsinfo/'+item.id}">
+                                         {{item.title}}
+                                      </router-link>
+
                                     <span>{{item.add_time}}</span>
                                 </div>
                             </li>
@@ -138,7 +141,7 @@
        // 获取商品的数据
        getginfo(){
            this.$http.get('/site/goods/gettopdata/goods').then(res=>{
-           console.log(res.data.message);
+                console.log(res.data.message);
                  this.ginfo = res.data.message;
 
             });
