@@ -122,23 +122,25 @@
             <div id="tabHead" class="tab-head" style="position: static; top: 517px; width: 925px;">
                 <ul>
                     <li>
-                        <a class="selected" href="javascript:;">商品介绍</a>
+                        <a v-bind="{class:isContent?'selected':''}"  href="javascript:;"  @click='changeIsContent(true)'>商品介绍</a>
                     </li>
                     <li>
-                        <a href="javascript:;" class="">商品评论</a>
+                        <a href="javascript:;"  v-bind="{class:!isContent?'selected':''}"  @click='changeIsContent(false)'>商品评论</a>
                     </li>
                 </ul>
             </div>
             <!--/选项卡-->
 
-        <!--选项内容-->
-        <div class="tab-content entry" style="display:none;">
+
+
+        <!--选项卡的内容 和 选项内容要对应-->
+        <div  class="tab-content entry"  v-if="isContent" >
             <!-- 展示商品内容 -->
 
             <span v-html="ginfo.goodsinfo.content"></span>
         </div>
 
-        <div class="tab-content" style="display:block;">
+        <div class="tab-content" v-if="!isContent" >
             <!--网友评论-->
             <div class="comment-box">
                 <!--上传评论-->
@@ -231,7 +233,13 @@ import  '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
   export default{
     data(){
         return{
-            ginfo:{}
+            ginfo:{},
+            //MVC，所以样式什么控制都要想到数据
+            isContent:true,
+            // 控制tab的切换
+            changeIsContent(iscontent){
+                this.isContent = iscontent;
+            }
         }
     },
     created(){
