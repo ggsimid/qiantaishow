@@ -16,15 +16,18 @@ Vue.use(vueRouter);
 
 // 1.0.3 定义路由规则
 // 导入系统的整体布局组件
+//一个组件是一个实例化VM对象，在这里引入是全局引入。
 import layout from './components/site/layout.vue';
 
+import goodslist from './components/site/goodslist.vue';
 
+//子路由和父路由关系是表明：在URL上面的关系
 var router = new vueRouter({
     routes:[
         {name:'default',path:'/',redirect:'/site'},
         {name:'layout',path:'/site',component:layout,
     children:[
-       
+        {name:'goodslist',path:'goodslist',component:goodslist}
     ]
 }
     ]
@@ -52,6 +55,7 @@ import elementUI  from 'element-ui';
 // 3.0.2 导入elemeui的css控制样式
 // 由于项目的样式和elementui的css样式有些不一样，那么修改了这个样式以后，要利用自己的样式替换原来的原有样式
 
+// 在main.js导入的文件都会在index.html的最下方导入。所以要使用饿了么UI样式，并且还需要覆盖其样式，需要在组件的文件中导入（如goodslist）
 // import 'element-ui/lib/theme-default/index.css';
 
 // 3.0.3 绑定
@@ -85,7 +89,7 @@ new Vue({
     // 使用app这个组件对象
     // es5的写法
     // render:function(create){create(App);}
-    router,   
+    router,
     // es6的写法 :将app当做根组件替换index1.html这个模板中的<div id="app">
     render:create=>create(App)
 });
