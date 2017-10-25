@@ -131,19 +131,20 @@
             pageIndex:1,
             pageSize:10,
             clist:[]
+
         }
     },
     created(){
         this.getginfo();
         this.getclist();
     },
+
     methods: {
        // 获取商品的数据
        getginfo(){
            this.$http.get('/site/goods/gettopdata/goods').then(res=>{
-                console.log(res.data.message);
+                 console.log(res.data.message);
                  this.ginfo = res.data.message;
-
             });
         },
         getclist(){

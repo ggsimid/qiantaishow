@@ -202,7 +202,7 @@
                         <router-link  v-bind="{to:'/site/goodsinfo/'+item.id}">
                             <div class="txt-box">
                                 {{item.title}}
-                                <span>{{item.add_time}}</span>
+                                <span>{{item.add_time | datefmt("YYYY-MM-DD")}}</span>
                             </div>
                         </router-link>
                     </li>
@@ -244,6 +244,14 @@ import  '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
     },
     created(){
         this.getinfo();
+    },
+    watch:{
+          // 当url的参数的发生改变的时候，会触发这个watch的重新执行。观察的不一定是data里面的数据!
+          '$route':function(){
+                // 当触发了这个方法就重新获取到最新的数据，因为修改了M，所以V也跟着改变
+                this.getinfo();
+                console.log(123);
+           }
     },
     methods:{
         getinfo(){
