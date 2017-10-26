@@ -143,29 +143,34 @@
         <div class="tab-content" v-if="!isContent" >
             <!--网友评论-->
             <div class="comment-box">
+
                 <!--上传评论-->
-                <form id="commentForm" name="commentForm" class="form-box" url="/tools/submit_ajax.ashx?action=comment_add&amp;channel_id=2&amp;article_id=98">
+                <form id="commentForm" name="commentForm" class="form-box" >
                     <div class="avatar-box">
                         <i class="iconfont icon-user-full"></i>
                     </div>
                     <div class="conn-box">
 
                     <div class="editor">
-                        <textarea id="txtContent" name="txtContent" sucmsg=" " datatype="*10-1000" nullmsg="请填写评论内容！">
+                        <textarea id="txtContent" name="txtContent" sucmsg=" " datatype="*10-1000"  v-model="txtContent">
 
                         </textarea>
                         <span class="Validform_checktip"></span></div>
 
                     <div class="subcon">
 
-                        <input id="btnSubmit" name="submit" type="submit" value="提交评论" class="submit">
+                        <input @click='tijiao' id="btnSubmit" name="button" type="button" value="提交评论" class="submit">
 
                         <span class="Validform_checktip"></span></div>
                     </div>
                 </form>
+
+
                 <ul id="commentList" class="list-box">
                     <!--查看评论区-->
-                    <p v-if='pinglun.length<0' style="margin:5px 0 15px 69px;line-height:42px;text-align:center;border:1px solid #f7f7f7;">暂无评论，快来抢沙发吧!</p>
+                    <p  v-if='pinglun.length<=0' style="margin:5px 0 15px 69px;line-height:42px;text-align:center;border:1px solid #f7f7f7;">
+                        暂无评论，快来抢沙发吧!
+                    </p>
 
                     <li  v-for="(item,index)  in pinglun"  :key="index">
                         <div class="avatar-box">
@@ -185,7 +190,7 @@
                 <div class="page-box" style="margin:5px 0 0 62px">
                     <!--关联data中的数据，是data控制组件的显示，但是如果组件想影响data中数据，那么要通过size-change和****-->
                     <div class="block">
-          
+
                         <el-pagination
                           @size-change="SizeChange"
                           @current-change="indexChange"
@@ -256,6 +261,8 @@ import  '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
   export default{
     data(){
         return{
+            //评论信息
+            txtContent:'',
             ginfo:{},
             //MVC，所以样式什么控制都要想到数据
             isContent:true,
@@ -279,10 +286,29 @@ import  '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
           '$route':function(){
                 // 当触发了这个方法就重新获取到最新的数据，因为修改了M，所以V也跟着改变
                 this.getinfo();
-
+                // 评论也要更近
+                this.getPinglun();
            }
     },
     methods:{
+        //提交表单
+        tijiao(){
+            if(this.txtContent==''){
+
+                //$message等等是饿了么定义在Vue实例上的全局方法
+                this.$message('评论信息必须填写');
+                return;
+
+            }
+            var goodsid = this.$route.params.goodsid;
+            this.$http.post('/site/validate/comment/post/goods/'+goodsid,"commenttxt="+this.txtContent).then(res=>{
+                    // 3.0 清空文本框信息
+                   this.txtContent = '';
+                   // 4.0 刷新当前商品的评论数据即可
+                   this.getPinglun();
+
+            });
+        },
         //当页码和页容量改变时候，会执行函数，通过传入的值.
         SizeChange(val){
             this.pageSize = val;
