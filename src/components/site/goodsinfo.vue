@@ -250,6 +250,8 @@ import  '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
 
 import {vm,key} from '../../myjs/vm.js';
 
+import {setItem} from '../../myjs/localStoragefunc.js';
+
 //因为是异步获取，所以不能在这里设置初始化
 //(function() {
     //$('#magnifier1').imgzoon({magnifier:'#magnifier1'});
@@ -297,6 +299,10 @@ import {vm,key} from '../../myjs/vm.js';
 
            //通过vuex对象完成跨组件通讯
            this.$store.dispatch('changeBuyCount',this.buycount);
+           //并且把商品ID和数量写入到localStorage中
+           var  goodsid = this.$route.params.goodsid;
+
+           setItem({gid:goodsid,bcount:this.buycount});
        },
         //提交表单
         tijiao(){
