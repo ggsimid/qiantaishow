@@ -295,6 +295,8 @@ import {vm,key} from '../../myjs/vm.js';
            // 通过vm对象完成跨组件通讯
            //vm.$emit(key,this.buycount);
 
+           //通过vuex对象完成跨组件通讯
+           this.$store.dispatch('changeBuyCount',this.buycount);
        },
         //提交表单
         tijiao(){

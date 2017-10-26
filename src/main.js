@@ -7,6 +7,8 @@ import Vue from 'vue';
 // var App = require('./App.vue');
 import App from './App.vue';
 
+
+
 // 1.0 路由的写法
 // 1.0.0 导包
 import vueRouter from 'vue-router';
@@ -65,11 +67,12 @@ import elementUI  from 'element-ui';
 // 3.0.3 绑定
 Vue.use(elementUI);
 
+// 4.0
 // 导入整个网站布局的控制样式
 import '../statics/site/css/style.css';
 
 
-// 4.0 定义共有过滤器(全局过滤器)来实现日期字符串的格式化操作
+// 5.0 定义共有过滤器(全局过滤器)来实现日期字符串的格式化操作
 Vue.filter('datefmt',(input,fmtstring)=>{
     var mydate = new Date(input);
     var y = mydate.getFullYear();
@@ -88,12 +91,40 @@ Vue.filter('datefmt',(input,fmtstring)=>{
 
 });
 
+
+//6.0 引进vuex，实现状态管理
+import vuex from 'vuex';
+Vue.use(vuex);
+
+var state = {
+    buycount:0
+};
+
+var actions = {
+    changeBuyCount({commit},parmsBuyCount){
+        commit('changeBuyCount',parmsBuyCount)
+    }
+};
+
+var mutations = {
+    changeBuyCount(state,parmsBuyCount){
+        state.buycount += parmsBuyCount;
+    }
+};
+
+var getters = {};
+
+var store = new vuex.Store({
+    state,actions,mutations,getters
+});
+
 new Vue({
     el:'#app',
     // 使用app这个组件对象
     // es5的写法
     // render:function(create){create(App);}
     router,
+    store,
     // es6的写法 :将app当做根组件替换index1.html这个模板中的<div id="app">
     render:create=>create(App)
 });
