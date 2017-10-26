@@ -165,14 +165,37 @@
                 </form>
                 <ul id="commentList" class="list-box">
                     <!--查看评论区-->
-                    <p style="margin:5px 0 15px 69px;line-height:42px;text-align:center;border:1px solid #f7f7f7;">暂无评论，快来抢沙发吧！</p>
-                    <li><div class="avatar-box"><i class="iconfont icon-user-full"></i></div><div class="inner-box"><div class="info"><span>匿名用户</span>
-                    <span>2017/10/23 14:58:59</span></div><p>testtesttest</p></div></li><li><div class="avatar-box"><i class="iconfont icon-user-full"></i></div><div class="inner-box"><div class="info"><span>匿名用户</span>
-                    <span>2017/10/23 14:59:36</span></div><p>很清晰调动单很清晰调动单</p></div></li>
+                    <p v-if='pinglun.length<0' style="margin:5px 0 15px 69px;line-height:42px;text-align:center;border:1px solid #f7f7f7;">暂无评论，快来抢沙发吧!</p>
+
+                    <li  v-for="(item,index)  in pinglun"  :key="index">
+                        <div class="avatar-box">
+                            <i class="iconfont icon-user-full"></i>
+                        </div>
+                        <div class="inner-box">
+                            <div class="info">
+                                <span>{{item.user_name}}</span>
+                                <span>{{item.add_time}}</span>
+                            </div>
+                            <p>{{item.content}}</p>
+                        </div>
+                    </li>
+
                 </ul>
                 <!--放置页码-->
                 <div class="page-box" style="margin:5px 0 0 62px">
-                    <div id="pagination" class="digg"><span class="disabled">« 上一页</span><span class="current">1</span><span class="disabled">下一页 »</span></div>
+                    <!--关联data中的数据，是data控制组件的显示，但是如果组件想影响data中数据，那么要通过size-change和****-->
+                    <div class="block">
+          
+                        <el-pagination
+                          @size-change="SizeChange"
+                          @current-change="indexChange"
+                          :current-page="pageIndex"
+                          :page-sizes="[5,10,20,30]"
+                          :page-size="pageSize"
+                          layout="total, sizes, prev, pager, next, jumper"
+                          :total="totalcount">
+                        </el-pagination>
+                      </div>
                 </div>
                 <!--/放置页码-->
             </div>
@@ -236,6 +259,11 @@ import  '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
             ginfo:{},
             //MVC，所以样式什么控制都要想到数据
             isContent:true,
+            pageIndex:1,
+            pageSize:5,
+            totalcount:0,
+            //获取评论信息
+            pinglun:[],
             // 控制tab的切换
             changeIsContent(iscontent){
                 this.isContent = iscontent;
@@ -244,21 +272,42 @@ import  '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
     },
     created(){
         this.getinfo();
+        this.getPinglun();
     },
     watch:{
           // 当url的参数的发生改变的时候，会触发这个watch的重新执行。观察的不一定是data里面的数据!
           '$route':function(){
                 // 当触发了这个方法就重新获取到最新的数据，因为修改了M，所以V也跟着改变
                 this.getinfo();
-                console.log(123);
+
            }
     },
     methods:{
+        //当页码和页容量改变时候，会执行函数，通过传入的值.
+        SizeChange(val){
+            this.pageSize = val;
+            this.getPinglun();
+        },
+        indexChange(val){
+            this.pageIndex = val;
+            this.getPinglun();
+        },
+        //根据ID和分页页数和页码获取评论
+        getPinglun(){
+            var goodsid = this.$route.params.goodsid;
+            this.$http.get('/site/comment/getbypage/goods/'+goodsid+'?pageIndex='+this.pageIndex+'&pageSize='+this.pageSize)
+            .then(res=>{
+                this.pinglun = res.data.message;
+                this.totalcount = res.data.totalcount;
+                console.log(res);
+            })
+        },
+        //根据商品ID获取商品信息
         getinfo(){
 
             var goodsid = this.$route.params.goodsid;
             this.$http.get('/site/goods/getgoodsinfo/'+goodsid).then(res=>{
-                console.log(res);
+
                 this.ginfo = res.data.message;
                 // 等图片数据加载回来以后再去执行插件的初始化操作
                     setTimeout(()=>{
