@@ -25,6 +25,8 @@ import goodslist from './components/site/goodslist.vue';
 
 import goodsinfo from './components/site/goodsinfo.vue';
 
+import car from './components/site/car.vue';
+
 //子路由和父路由关系是表明：在URL上面的关系
 var router = new vueRouter({
     routes:[
@@ -32,7 +34,8 @@ var router = new vueRouter({
         {name:'layout',path:'/site',component:layout,
     children:[
         {name:'goodslist',path:'goodslist',component:goodslist},
-        {name:'goodsinfo',path:'goodsinfo/:goodsid',component:goodsinfo}
+        {name:'goodsinfo',path:'goodsinfo/:goodsid',component:goodsinfo},
+        {name:'car',path:'car',component:car}
 
     ]
 }

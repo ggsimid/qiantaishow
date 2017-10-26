@@ -14,11 +14,11 @@
                         <a href="/register.html">注册</a>
                         <strong>|</strong>
 
-                        <a href="/cart.html">
+                        <router-link to="/site/car">
                             <i class="iconfont icon-cart"></i>购物车
                             <!--( <span id="shoppingCartCount">{{buycount}}</span> )-->
                             ( <span id="shoppingCartCount">{{$store.state.buycount}}</span> )
-                        </a>
+                        </router-link>
                     </div>
                 </div>
             </div>
