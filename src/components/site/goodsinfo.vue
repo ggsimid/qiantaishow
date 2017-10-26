@@ -91,12 +91,7 @@
                 <dt>购买数量</dt>
                 <dd>
                     <div class="stock-box">
-                        <input id="commodityChannelId" type="hidden" value="2">
-                        <input id="commodityArticleId" type="hidden" value="98">
-                        <input id="commodityGoodsId" type="hidden" value="0">
-                        <input id="commoditySelectNum" type="text" maxlength="9" value="1" maxvalue="10" onkeydown="return checkNumber(event);">
-                        <a class="add" onclick="addCartNum(1);">+</a>
-                        <a class="remove" onclick="addCartNum(-1);">-</a>
+                        <el-input-number v-model="buycount"  :min="1" :max="ginfo.goodsinfo.stock_quantity"></el-input-number>
                     </div>
                     <span class="stock-txt">
                             库存
@@ -108,7 +103,7 @@
                 <dd>
                     <div class="btn-buy" id="buyButton">
                         <button class="buy" onclick="cartAdd(this,'/',1,'/shopping.html');">立即购买</button>
-                        <button class="add" onclick="cartAdd(this,'/',0,'/cart.html');">加入购物车</button>
+                        <button class="add" @click="addCar">加入购物车</button>
                     </div>
                 </dd>
             </dl>
@@ -253,6 +248,8 @@
 
 import  '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
 
+import {vm,key} from '../../myjs/vm.js';
+
 //因为是异步获取，所以不能在这里设置初始化
 //(function() {
     //$('#magnifier1').imgzoon({magnifier:'#magnifier1'});
@@ -261,6 +258,8 @@ import  '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
   export default{
     data(){
         return{
+            //购买商品的数量
+            buycount:1,
             //评论信息
             txtContent:'',
             ginfo:{},
@@ -291,6 +290,12 @@ import  '../../../statics/site/js/jqplugins/imgzoom/magnifier.js';
            }
     },
     methods:{
+       // 点击加入购物车按钮的时候触发
+       addCar(){
+           // 通过vm对象完成跨组件通讯
+           //vm.$emit(key,this.buycount);
+
+       },
         //提交表单
         tijiao(){
             if(this.txtContent==''){

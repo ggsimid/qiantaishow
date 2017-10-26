@@ -84,8 +84,7 @@
                         <p>                     
                             <a href="/goods/43.html" v-for="(item,index) in item.level2catelist" :key="index">
                                 {{item.subcatetitle}}
-                            </a>
-                   
+                            </a>                   
                             <a href="/goods/40.html">更多<i>+</i></a>
                         </p>
                     </div>
@@ -121,7 +120,6 @@
 </template>
 
 <script>
-
 //当前Vue组件的Vue对象：想要使用Vue，就要写在下面。
   export default{
     data(){
@@ -138,7 +136,6 @@
         this.getginfo();
         this.getclist();
     },
-
     methods: {
        // 获取商品的数据
        getginfo(){
@@ -153,11 +150,9 @@
                 this.clist = res.data.message;
                 console.log(this.clist);
             });
-
         }
     }
   }
-
 </script>
 
 <style>

@@ -13,8 +13,11 @@
                         <a href="/login.html">登录</a>
                         <a href="/register.html">注册</a>
                         <strong>|</strong>
-                        <!--<a href="/content/contact.html"><i class="iconfont icon-phone"></i>联系我们</a>
-                                       <a href="/cart.html"><i class="iconfont icon-cart"></i>购物车(<span id="shoppingCartCount"><script type="text/javascript" src="/tools/submit_ajax.ashx?action=view_cart_count"></script></span>)</a>-->
+
+                        <a href="/cart.html">
+                            <i class="iconfont icon-cart"></i>购物车
+                            ( <span id="shoppingCartCount">{{buycount}}</span> )
+                        </a>
                     </div>
                 </div>
             </div>
@@ -100,11 +103,20 @@ $(document).ready(function() {
 
 });
 
+import {vm,key} from '../../myjs/vm.js';
 
   export default{
-
+    data(){
+        return {
+            buycount:0
+        }
+    },
     mounted(){
-        
+        //通过监听同一个vm对象来实现跨组件通讯
+        vm.$on(key,(buycount)=>{
+            // 修改购物车中的数值,
+            this.buycount += buycount;
+        });
     }
   }
 
