@@ -77,11 +77,15 @@ router.beforeEach((to,from,next) => {
             //发送登录验证请求/site/account/islogin
 
             axios.get('/site/account/islogin').then(res=>{
-                if(res.code=="logined"){
+
+                if(res.data.code=="logined"){
                     next();
                 }
                 else{
-                    //没有登录,这里也不能使用this.$router
+                    //只有触发了需要登录时候但是没有登录，就跳转到登录页面，并且记下跳转前的路由名字。别的时候不需要记录上一个路由！
+                    //这里也不能使用this.$router
+                    //console.log(from);通过from获取路由来源
+                    localStorage.setItem('fromRouter',from.name);
                     router.push({ path:'/site/login'});
                 }
             });

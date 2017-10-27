@@ -53,7 +53,8 @@
 
                     this.$message.success(res.data.message);
 
-                    this.$router.push({path : '/site/goodslist'});
+                    var fromRouter = localStorage.getItem('fromRouter')
+                    this.$router.push({path : '/site/'+fromRouter});
 
                 }else{
                     this.$message.error(res.data.message);
