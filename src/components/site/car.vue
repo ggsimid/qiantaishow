@@ -278,8 +278,11 @@ import {removeItem,getItem,setItem} from '../../myjs/localStoragefunc.js';
                 }
                 this.goodsmessage = res.data.message;
 
+                //先归零，再设置,以免重复去本地值，然后赋值
+                this.$store.dispatch('changeBuyCount',-this.$store.state.buycount);
                 //同步到vuex,计算总量
                 this.$store.dispatch('changeBuyCount',allnum);
+
             });
         },
 
