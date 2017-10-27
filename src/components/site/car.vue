@@ -50,7 +50,12 @@
                     <tbody>
                     <tr>
                         <th width="48" align="center">
-                            <a>全选</a>
+                            <el-switch
+                              @change="changeAll"
+                              v-model="isAll"
+                              on-text="全选"
+                              off-text="反选">
+                            </el-switch>
                         </th>
                         <th align="left" colspan="2">商品信息</th>
                         <th width="84" align="left">单价</th>
@@ -70,7 +75,7 @@
                             </div>
                         </td>
                     </tr>
-                    {{value}}
+
                     <!--商品列表-->
                     <tr v-for="(item,index) in goodsmessage" :key="index">
                         <th width="48" align="center">
@@ -134,19 +139,50 @@ import {removeItem,getItem,setItem} from '../../myjs/localStoragefunc.js';
             //商品信息,是个数组
             goodsmessage:[],
             //怎么知道我的哪个商品被勾选上呢？商品信息是数据有序的，一行一行排列的，所以使用一个数组去保存每一行商品是否被勾选上！
-            value:[]
+            value:[],
+            //是否全选
+            isAll:false
         }
     },
     created(){
-
         this.getgoodsmessage();
     },
+
+
+    //watch:{
+    //    isAll:function(val,oldval){
+            //有个问题：下面的选项改变，会引起isall改变，然后isall改变，又会影响computed改变，所以不能通过watch方法去实现！！要通过点击
+            //事件，通过点击事件改变isall，从而改变下面选项。而不是任何时候isall改变都会改变下面选项
+     //       if(val){
+    //            console.log(this.value);
+     //           var _this = this;
+      //          this.value.forEach(function(item,index){
+      //              _this.value[index] = true;
+       //         })
+     //       }else{
+      //          var _this = this;
+      //          this.value.forEach(function(item,index){
+      //              _this.value[index] = false;
+      //          })
+      //      }
+      //  }
+    //},
+
 
     computed:{
         //当选中的value和列表goodsmessage里面的数量改变就会触发计算属性，然后就会反应到总价上！
         selletmentAmount(){
-            //同级那些value中哪些是TRUE（不需要了）
-            //var trueArr = this.value.filter(function(item){return item;});
+            //同级那些value中哪些是TRUE
+            var trueArr = this.value.filter(function(item){return item;});
+            //判断下面选项全选中就设置上面的全选
+            if( trueArr.length==this.goodsmessage.length ){
+                this.isAll = true;
+            }else{
+
+                this.isAll = false;
+            }
+
+
 
             //计算总价
             var amount = 0;
@@ -157,7 +193,6 @@ import {removeItem,getItem,setItem} from '../../myjs/localStoragefunc.js';
                 if(value){
                     xuanzhongshu += _this.goodsmessage[index].buycount;
                     amount += _this.goodsmessage[index].sell_price * _this.goodsmessage[index].buycount;
-
                 }
             })
 
@@ -165,13 +200,36 @@ import {removeItem,getItem,setItem} from '../../myjs/localStoragefunc.js';
         }
     },
     methods:{
+        //点击修改全选
+        changeAll(){
+            if(this.isAll){
+                var _this = this;
+                this.value.forEach(function(value,index){
+                    _this.value[index] = true;
+                    _this.value.push(false);
+                    _this.value.pop();
+                });
+            }else{
+                var _this = this;
+                this.value.forEach(function(value,index){
+                    _this.value[index] = false;
+
+                    //当计算属性的属性值改变的时候，并不会触发重新计算！
+                    _this.value.push(false);
+                    _this.value.pop();
+                });
+            }
+        },
+
         //修改goodsmessage商品数量，同时修改localStorage上
         changebcount(id,fuhao){
+
             for(var i=0;i<this.goodsmessage.length;i++){
                 if(this.goodsmessage[i].id==id){
                     if(fuhao=="+"){
                         this.goodsmessage[i].buycount ++;
-
+                        //修改vuex状态值
+                        this.$store.dispatch('changeBuyCount',1);
                         //同时要修改本地存储的商品数量
                         setItem({gid:id,bcount:1});
 
@@ -179,8 +237,9 @@ import {removeItem,getItem,setItem} from '../../myjs/localStoragefunc.js';
                         if(this.goodsmessage[i].buycount>1){
 
                             this.goodsmessage[i].buycount --;
+                            //修改vuex状态值
+                            this.$store.dispatch('changeBuyCount',-1);
                             setItem({gid:id,bcount:-1});
-
                         }
                     }
                 }
@@ -199,29 +258,35 @@ import {removeItem,getItem,setItem} from '../../myjs/localStoragefunc.js';
             }
 
             this.$http.get('site/comment/getshopcargoods/'+url.join(',')).then(res=>{
+                var allnum = 0;
                 //商品ID和对应的商品数量关联起来
+
                 for(var key in obj){
 
                     for(var i=0;i<res.data.message.length;i++){
                         if(res.data.message[i].id == key){
-                            res.data.message[i].buycount=obj[key]
+                            //遍历,当商品id和localstorage里面的ID一致
+                            res.data.message[i].buycount=obj[key];
+                            allnum += obj[key];
                         }
                     }
                     //把value里面的所有值都是没有选中
                     this.value.push(false);
                 }
                 this.goodsmessage = res.data.message;
+
+                //同步到vuex,计算总量
+                this.$store.dispatch('changeBuyCount',allnum);
             });
         },
+
+
         delectgoods(index,delectid){
             //删除value和goodsmessage还有local上面的数据
             this.value.splice(index,1);
             this.goodsmessage.splice(index,1);
             removeItem(delectid);
         }
-
-
-
     }
   }
 </script>
