@@ -70,6 +70,7 @@
                             </div>
                         </td>
                     </tr>
+                    {{value}}
                     <!--商品列表-->
                     <tr v-for="(item,index) in goodsmessage" :key="index">
                         <th width="48" align="center">
@@ -99,8 +100,8 @@
 
                     <tr>
                         <th align="right" colspan="8">
-                            已选择商品 <b class="red" id="totalQuantity">0</b> 件 &nbsp;&nbsp;&nbsp;
-                            商品总金额（不含运费）：<span class="red">￥</span><b class="red" id="totalAmount">0</b>元
+                            已选择商品 <b class="red" id="totalQuantity">{{selletmentAmount.xuanzhongshu}}</b> 件 &nbsp;&nbsp;&nbsp;
+                            商品总金额（不含运费）：<span class="red">￥</span><b class="red">{{selletmentAmount.amount}}</b>元
                         </th>
                     </tr>
                 </tbody></table>
@@ -130,9 +131,9 @@ import {removeItem,getItem,setItem} from '../../myjs/localStoragefunc.js';
   export default{
     data(){
         return {
-            //商品信息
+            //商品信息,是个数组
             goodsmessage:[],
-            //怎么知道我的哪个商品被勾选上呢？只要我的商品数据被渲染了出来，那么就是有序的，一行一行排列的，所以使用一个数据去保存每一行商品是否被勾选上！
+            //怎么知道我的哪个商品被勾选上呢？商品信息是数据有序的，一行一行排列的，所以使用一个数组去保存每一行商品是否被勾选上！
             value:[]
         }
     },
@@ -140,26 +141,53 @@ import {removeItem,getItem,setItem} from '../../myjs/localStoragefunc.js';
 
         this.getgoodsmessage();
     },
+
+    computed:{
+        //当选中的value和列表goodsmessage里面的数量改变就会触发计算属性，然后就会反应到总价上！
+        selletmentAmount(){
+            //同级那些value中哪些是TRUE（不需要了）
+            //var trueArr = this.value.filter(function(item){return item;});
+
+            //计算总价
+            var amount = 0;
+            //计算商品数
+           var xuanzhongshu =0;
+            var _this = this;
+            this.value.forEach(function(value,index){
+                if(value){
+                    xuanzhongshu += _this.goodsmessage[index].buycount;
+                    amount += _this.goodsmessage[index].sell_price * _this.goodsmessage[index].buycount;
+
+                }
+            })
+
+            return {amount:amount,xuanzhongshu:xuanzhongshu};
+        }
+    },
     methods:{
-        //修改商品数量
+        //修改goodsmessage商品数量，同时修改localStorage上
         changebcount(id,fuhao){
             for(var i=0;i<this.goodsmessage.length;i++){
                 if(this.goodsmessage[i].id==id){
                     if(fuhao=="+"){
                         this.goodsmessage[i].buycount ++;
+
                         //同时要修改本地存储的商品数量
                         setItem({gid:id,bcount:1});
+
                     }else if(fuhao=="-"){
                         if(this.goodsmessage[i].buycount>1){
+
                             this.goodsmessage[i].buycount --;
                             setItem({gid:id,bcount:-1});
-                        }
 
+                        }
                     }
                 }
             }
         },
-        //获取数据
+
+        //购物车页面出来时候请求获取商品数据
         getgoodsmessage(){
             //site/comment/getshopcargoods/:ids根据商品ID获取商品数据
 
@@ -171,7 +199,7 @@ import {removeItem,getItem,setItem} from '../../myjs/localStoragefunc.js';
             }
 
             this.$http.get('site/comment/getshopcargoods/'+url.join(',')).then(res=>{
-                //把对应的商品ID和数量关联起来
+                //商品ID和对应的商品数量关联起来
                 for(var key in obj){
 
                     for(var i=0;i<res.data.message.length;i++){
@@ -179,11 +207,13 @@ import {removeItem,getItem,setItem} from '../../myjs/localStoragefunc.js';
                             res.data.message[i].buycount=obj[key]
                         }
                     }
+                    //把value里面的所有值都是没有选中
+                    this.value.push(false);
                 }
-
                 this.goodsmessage = res.data.message;
-
             });
+
+
         }
     }
   }

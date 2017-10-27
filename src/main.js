@@ -36,7 +36,6 @@ var router = new vueRouter({
         {name:'goodslist',path:'goodslist',component:goodslist},
         {name:'goodsinfo',path:'goodsinfo/:goodsid',component:goodsinfo},
         {name:'car',path:'car',component:car}
-
     ]
 }
     ]
