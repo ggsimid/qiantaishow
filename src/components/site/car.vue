@@ -94,7 +94,7 @@
                         </th>
                         <th width="104" align="left">{{item.sell_price*item.buycount}}</th>
                         <th width="54" align="center">
-                            <el-button type='success'>删除</el-button>
+                            <el-button type='success' @click="delectgoods(index,item.id)">删除</el-button>
                         </th>
                     </tr>
 
@@ -212,9 +212,16 @@ import {removeItem,getItem,setItem} from '../../myjs/localStoragefunc.js';
                 }
                 this.goodsmessage = res.data.message;
             });
-
-
+        },
+        delectgoods(index,delectid){
+            //删除value和goodsmessage还有local上面的数据
+            this.value.splice(index,1);
+            this.goodsmessage.splice(index,1);
+            removeItem(delectid);
         }
+
+
+
     }
   }
 </script>

@@ -34,6 +34,7 @@ export function setItem(goodsinfo){
 
 export function removeItem(goodsid){
     var goodsObj = getItem();
+    console.log(goodsObj);
     delete goodsObj[goodsid];
-    localStorage.setItem(key,JSON.parse(goodsObj));
+    localStorage.setItem(key,JSON.stringify(goodsObj));
 }
