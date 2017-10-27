@@ -8,6 +8,25 @@ import Vue from 'vue';
 import App from './App.vue';
 
 
+// 2.0 axios的使用
+// 2.0.1 导入axios包
+import axios from 'axios';
+// 2.0.2 设定axios的基本的url请求前缀
+axios.defaults.baseURL = 'http://157.122.54.189:9095';
+
+// 2.0.3 想要在将来的每个子组件中的方法中均可以使用 this.$http去调用其方法执行ajax请求
+//就要将axios对象挂载到vue的原型属性$http上
+Vue.prototype.$http = axios;
+
+// 设定axios的参数使得axios发出的ajax请求能够自动带上cookie
+axios.defaults.withCredentials = true;
+
+// 2.0.4 绑定到vue上
+Vue.use(axios);
+
+
+
+
 
 // 1.0 路由的写法
 // 1.0.0 导包
@@ -27,6 +46,11 @@ import goodsinfo from './components/site/goodsinfo.vue';
 
 import car from './components/site/car.vue';
 
+import shopping from  './components/site/shopping.vue';
+
+import login from  './components/site/login.vue';
+
+
 //子路由和父路由关系是表明：在URL上面的关系
 var router = new vueRouter({
     routes:[
@@ -35,27 +59,40 @@ var router = new vueRouter({
     children:[
         {name:'goodslist',path:'goodslist',component:goodslist},
         {name:'goodsinfo',path:'goodsinfo/:goodsid',component:goodsinfo},
-        {name:'car',path:'car',component:car}
+        {name:'car',path:'car',component:car},
+        {name:'shopping',path:'shopping',component:shopping,meta:{islogin:true}},
+        {name:'login',path:'login',component:login}
     ]
 }
     ]
 });
 
-// 2.0 axios的使用
-// 2.0.1 导入axios包
-import axios from 'axios';
-// 2.0.2 设定axios的基本的url请求前缀
-axios.defaults.baseURL = 'http://157.122.54.189:9095';
+router.beforeEach((to,from,next) => {
+    //在这里不能使用this,this  是 undefined 。router生成在Vue实例之前！！
 
-// 2.0.3 想要在将来的每个子组件中的方法中均可以使用 this.$http去调用其方法执行ajax请求
-//就要将axios对象挂载到vue的原型属性$http上
-Vue.prototype.$http = axios;
+    if(to.name=='login'){
+        next();
+    }else{
+        if(to.meta.islogin){
+            //发送登录验证请求/site/account/islogin
 
-// 设定axios的参数使得axios发出的ajax请求能够自动带上cookie
-axios.defaults.withCredentials = true;
+            axios.get('/site/account/islogin').then(res=>{
+                if(res.code=="logined"){
+                    next();
+                }
+                else{
+                    //没有登录,这里也不能使用this.$router
+                    router.push({ path:'/site/login'});
+                }
+            });
+        }else{
+            next();
+        }
+    }
+});
 
-// 2.0.4 绑定到vue上
-Vue.use(axios);
+
+
 
 // 3.0 使用elementUI这个ui框架的步骤
 // 3.0.1、导包

@@ -120,10 +120,15 @@
 </template>
 
 <script>
+
+import {getItem}  from '../../myjs/localStoragefunc.js';
+
+
 //当前Vue组件的Vue对象：想要使用Vue，就要写在下面。
   export default{
     data(){
         return {
+
             ginfo:{},
             //当前页和当前页大小
             pageIndex:1,
@@ -135,20 +140,30 @@
     created(){
         this.getginfo();
         this.getclist();
+        //在获取数据时候，获取状态值
+        var goodsObj = getItem();
+        if(!(goodsObj=={})){
+            var bcount = 0;
+            for(var key in goodsObj){
+                bcount += goodsObj[key];
+            }
+            this.$store.state.buycount = bcount;
+        }
     },
     methods: {
        // 获取商品的数据
        getginfo(){
            this.$http.get('/site/goods/gettopdata/goods').then(res=>{
-                 console.log(res.data.message);
+
                  this.ginfo = res.data.message;
             });
         },
+
         getclist(){
             this.$http.get('/site/goods/getgoodsgroup')
             .then(res=>{
                 this.clist = res.data.message;
-                console.log(this.clist);
+
             });
         }
     }
